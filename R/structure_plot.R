@@ -403,7 +403,7 @@ compile_grouped_structure_plot_data <- function (L, topics, grouping,
     out$sample <- out$sample + m
     n          <- length(i)
     dat        <- rbind(dat,out)
-    ticks[j]   <- m + n/2
+    ticks[j]   <- m + (n + 1)/2
     m          <- m + n + gap
   }
   return(list(dat = dat,ticks = ticks))
