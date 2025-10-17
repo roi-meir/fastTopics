@@ -8,5 +8,6 @@
 ^\.circleci/config\.yml$
 ^\.github$
 ^inst/code$
+^inst/datafiles$
 ^vignettes/single\_cell\_rnaseq\_practical\.Rmd$
 ^\.Renviron$
