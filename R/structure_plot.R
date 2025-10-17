@@ -361,9 +361,10 @@ structure_plot_ggplot_call <- function (dat, colors, ticks = NULL,
     scale_fill_manual(values = colors) +
     labs(x = "",y = "topic proportion") +
     theme_cowplot(font.size) +
-    theme(axis.line   = element_blank(),
-          axis.ticks  = element_blank(),
-          axis.text.x = element_text(angle = 45,hjust = 1))
+    theme(axis.line       = element_blank(),
+          axis.ticks      = element_blank(),
+          axis.text.x     = element_text(angle = 45,hjust = 1),
+          legend.position = "bottom")
 
 # This is used by structure_plot to create a data frame suitable for
 # plotting with 'ggplot'. Input argument L is the topic proportions
