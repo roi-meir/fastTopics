@@ -7,7 +7,7 @@
 #' 
 #' @description These are topic modeling results from the \dQuote{20
 #' Newsgroups} data, with k = 10 topics. The data were originally
-#' downloaded from \url{http://qwone.com/~jason/20Newsgroups} and
+#' downloaded from \url{http://qwone.com/~jason/20Newsgroups/} and
 #' prepared by running code that found in an R Markdown file in this
 #' GitHub repository:
 #' \url{https://github.com/stephenslab/fastTopics-experiments}. See

@@ -224,10 +224,9 @@ effect_heatmap <- function (effects_matrix, zero_value, font_size) {
   pdat <- cbind(pdat,effects_matrix)
   pdat <- melt(pdat,id.vars = "feature_name",variable.name = "dim",
                value.name = "value")
-  pdat <- transform(pdat,
-                    effect_size = abs(value),
-                    effect_sign = factor(sign(value),c(-1,0,1)),
-                    feature_name = factor(feature_name,rev(features)))
+  pdat$effect_size  <- abs(pdat$value)
+  pdat$effect_sign  <- factor(sign(pdat$value),c(-1,0,1))
+  pdat$feature_name <- factor(pdat$feature_name,rev(features))
   pdat$effect_size[abs(pdat$effect_size) < zero_value] <- NA
   effect_size_breaks <-
     unname(quantile(pdat$effect_size,probs = c(0,0.25,0.5,0.75,1),
