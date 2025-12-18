@@ -364,7 +364,7 @@ pca_hexbin_plot_ggplot_call <- function (Y, bins, breaks, font.size = 9) {
   Y   <- as.data.frame(Y)
   pcs <- colnames(Y)
   colnames(Y) <- c("x","y")
-  return(ggplot(Y,aes(x = x,y = y)) +
+  return(ggplot(Y,aes(x = .data$x,y = .data$y)) +
          stat_bin_hex(mapping = aes_q(fill = quote(cut(after_stat(count),
                                                    breaks))),bins = bins) +
          scale_fill_manual(values = c("gainsboro","lightskyblue","gold",
