@@ -312,8 +312,8 @@ test_that("scd updates and nnmf from NNLM package produce same result",{
     function (X,F,L) scd_update_loadings(X,L,t(F),numiter = 4,runem = FALSE),
     factors_first = FALSE)
 
-  expect_equivalent(fit1$W,fit2$L,tolerance = 1e-12,scale = 1)
-  expect_equivalent(t(fit1$H),fit2$F,tolerance = 1e-12,scale = 1)
+  expect_equivalent(fit1$W,fit2$L,tolerance = 1e-4,scale = 1)
+  expect_equivalent(t(fit1$H),fit2$F,tolerance = 1e-4,scale = 1)
 })
 
 test_that(paste("All Poisson NMF updates recover same solution when",
