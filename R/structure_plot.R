@@ -337,9 +337,10 @@ plot.multinom_topic_model_fit <- function (x, ...)
 #'
 #' @param linewidth Passed as the \dQuote{linewidth} argument to
 #'   \code{\link[ggplot2]{geom_col}}.
-#' 
+#'
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_col
 #' @importFrom ggplot2 scale_x_continuous
 #' @importFrom ggplot2 scale_color_manual
@@ -354,7 +355,7 @@ plot.multinom_topic_model_fit <- function (x, ...)
 #'
 structure_plot_ggplot_call <- function (dat, colors, ticks = NULL,
                                         font.size = 9, linewidth = 0)
-  ggplot(dat,aes_string(x = "sample",y = "prop",fill = "topic")) +
+  ggplot(dat,aes(x = .data$sample,y = .data$prop,fill = .data$topic)) +
     geom_col(linewidth = linewidth,width = 1) +
     scale_x_continuous(limits = c(0,max(dat$sample) + 1),breaks = ticks,
                        labels = names(ticks)) +

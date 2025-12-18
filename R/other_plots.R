@@ -68,9 +68,10 @@
 #' @return A \code{ggplot} object.
 #'
 #' @seealso \code{\link{fit_poisson_nmf}}
-#' 
+#'
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_line
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 scale_y_continuous
@@ -180,12 +181,18 @@ create_progress_plot <- function (pdat, x, y, add.point.every, colors,
     ylab <- paste("distance from best deviance")
   else if (y == "loglik" | y == "loglik.multinom")
     ylab <- paste("distance from best loglik")
-  return(ggplot(pdat,aes_string(x = x,y = y,color = "method",
-                                linetype = "method",size = "method")) +
+  return(ggplot(pdat,aes(x        = .data$x,
+                         y        = .data$y,
+                         color    = .data$method,
+                         linetype = .data$method,
+                         size     = .data$method)) +
          geom_line(na.rm = TRUE) +
          geom_point(data = pdat[rows,],
-                    mapping = aes_string(x = x,y = y,color = "method",
-                                         fill = "method",shape = "method"),
+                    mapping = aes(x     = .data$x,
+                                  y     = .data$y,
+                                  color = .data$method,
+                                  fill  = .data$method,
+                                  shape = .data$method),
                     inherit.aes = FALSE,na.rm = TRUE) +
          scale_y_continuous(trans = "log10") +
          scale_color_manual(values = colors) +
@@ -245,9 +252,10 @@ plot_loglik_vs_rank <- function (fits,
 #'   \dQuote{x} and \dQuote{y}.
 #'
 #' @param font.size Font size used in plot.
-#' 
+#'
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_line
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 scale_x_continuous
@@ -257,7 +265,7 @@ plot_loglik_vs_rank <- function (fits,
 #' @export
 #' 
 loglik_vs_rank_ggplot_call <- function (dat, font.size = 9)
-  return(ggplot(dat,aes_string(x = "x",y = "y")) +
+  return(ggplot(dat,aes(x = .data$x,y = .data$y)) +
          geom_line() +
          geom_point() +
          scale_x_continuous(breaks = dat$x) +
@@ -352,9 +360,10 @@ loadings_plot <-
 #'   Only used to determine the plot title.
 #' 
 #' @param font.size Font size used in plot.
-#' 
+#'
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_boxplot
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 theme
@@ -364,7 +373,7 @@ loadings_plot <-
 #' @export
 #' 
 loadings_plot_ggplot_call <- function (dat, topic.label, font.size = 9)
-  ggplot(dat,aes_string(x = "x",y = "loading")) +
+  ggplot(dat,aes(x = .data$x,y = .data$loading)) +
     geom_boxplot(width = 0.25,size = 0.4,outlier.shape = NA) +
     labs(x = "",y = "loading",title = paste("topic",topic.label)) +
     theme_cowplot(font.size) +

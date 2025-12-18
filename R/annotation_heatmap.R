@@ -208,8 +208,9 @@ get_distinctive_features <-
 #
 #' @importFrom stats quantile
 #' @importFrom reshape2 melt
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 scale_size
 #' @importFrom ggplot2 scale_fill_manual
@@ -235,10 +236,10 @@ effect_heatmap <- function (effects_matrix, zero_value, font_size) {
     dot_colors <- c("navy","gray","orangered")
   else
     dot_colors <- c("navy","gray","black")
-  return(ggplot(pdat,aes_string(x = "dim",
-                                y = "feature_name",
-                                size = "effect_size",
-                                fill = "effect_sign")) +
+  return(ggplot(pdat,aes(x    = .data$dim,
+                         y    = .data$feature_name,
+                         size = .data$effect_size,
+                         fill = .data$effect_sign)) +
          geom_point(color = "white",shape = 21,na.rm = TRUE) +
          scale_size(range = c(1,6),breaks = effect_size_breaks,
                     labels = round(effect_size_breaks,digits = 3)) +

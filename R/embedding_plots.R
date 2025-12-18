@@ -173,8 +173,9 @@ embedding_plot_2d <-
 #' 
 #' @param font.size Font size used in plot.
 #'
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 scale_fill_manual
 #' @importFrom ggplot2 scale_fill_gradient2
@@ -189,10 +190,12 @@ embedding_plot_2d <-
 embedding_plot_2d_ggplot_call <-
   function (Y, fill, fill.type = c("loading","numeric","factor","none"),
             fill.label, font.size = 9) {
-  dims <- colnames(Y)
   fill.type <- match.arg(fill.type)
+  Y <- Y[,1:2]
+  dims <- colnames(Y)
+  colnames(Y) <- c("x","y")
   dat <- cbind(Y,data.frame(fill = fill))
-  p <- ggplot(dat,aes_string(x = dims[1],y = dims[2],fill = "fill")) +
+  p <- ggplot(dat,aes(x = .data$x,y = .data$y,fill = .data$fill)) +
     geom_point(shape = 21,color = "white",stroke = 0.3) +
     labs(x = dims[1],y = dims[2],fill = fill.label) +
     theme_cowplot(font.size) +
@@ -342,8 +345,9 @@ pca_hexbin_plot <- function (fit, Y, pcs = 1:2, bins = 40,
 
 #' @rdname embedding_plots
 #'
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 aes_q
 #' @importFrom ggplot2 after_stat
 #' @importFrom ggplot2 stat_bin_hex
@@ -356,9 +360,11 @@ pca_hexbin_plot <- function (fit, Y, pcs = 1:2, bins = 40,
 #' @export
 #' 
 pca_hexbin_plot_ggplot_call <- function (Y, bins, breaks, font.size = 9) {
-  Y <- as.data.frame(Y)
+  Y   <- Y[,1:2]
+  Y   <- as.data.frame(Y)
   pcs <- colnames(Y)
-  return(ggplot(Y,aes_string(x = pcs[1],y = pcs[2])) +
+  colnames(Y) <- c("x","y")
+  return(ggplot(Y,aes(x = x,y = y)) +
          stat_bin_hex(mapping = aes_q(fill = quote(cut(after_stat(count),
                                                    breaks))),bins = bins) +
          scale_fill_manual(values = c("gainsboro","lightskyblue","gold",
