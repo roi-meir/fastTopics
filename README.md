@@ -73,7 +73,7 @@ the [single-cell RNA-seq vignette, part 1][vignette-scrnaseq-1] and
 Also, try running the small example that illustrates the fast model
 fitting algorithms:
 
-```R
+```r
 example("fit_poisson_nmf")
 ```
 

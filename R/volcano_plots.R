@@ -178,8 +178,9 @@ volcano_plot_do_label_default <- function (lfc, y)
 #' 
 #' @param font.size Font size used in plot.
 #'
+#' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_point
 #' @importFrom ggplot2 scale_color_manual
 #' @importFrom ggplot2 scale_y_continuous
@@ -199,8 +200,10 @@ volcano_plot_ggplot_call <- function (dat, y, plot.title, max.overlaps = Inf,
     ybreaks <- c(0,1,2,5,10,20,50,100,200,500,1000,2000,5000,1e4,2e4,5e4)
   else
     ybreaks <- 10^seq(-8,0)
-  return(ggplot(dat,aes_string(x = "postmean",y = "y",color = "lfsr",
-                               label = "label")) +
+  return(ggplot(dat,aes(x     = .data$postmean,
+                        y     = .data$y,
+                        color = .data$lfsr,
+                        label = .data$label)) +
          geom_point(shape = 20,na.rm = TRUE) +
          geom_text_repel(color = "darkgray",size = 2.25,fontface = "italic",
                          segment.color = "darkgray",segment.size = 0.25,
