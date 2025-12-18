@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           update.packages("Matrix")
-          install.packages(c("remotes","rcmdcheck"))
+          install.packages(c("remotes","rcmdcheck","reshape2","rlang"))
           install.packages(c("devtools","remotes","quadprog","gtools"))
           install.packages(c("irlba","Rtsne","uwot","dplyr","tidyr","rlang"))
           install.packages(c("Rcpp","RcppArmadillo","RcppParallel","pbapply"))
