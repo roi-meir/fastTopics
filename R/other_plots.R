@@ -170,6 +170,8 @@ prepare_progress_plot_data <- function (fits, e) {
 create_progress_plot <- function (pdat, x, y, add.point.every, colors,
                                   linetypes, linesizes, shapes, fills,
                                   theme) {
+  pdat <- pdat[c(x,y,"method")]
+  names(pdat) <- c("x","y","method")
   rows <- which(pdat$iter %% add.point.every == 1)
   if (x == "timing")
     xlab <- "runtime (s)"
