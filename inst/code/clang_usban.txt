@@ -1,0 +1,25 @@
+# Steps taken to replicate clang USBAN test environment.
+# See these links for more details:
+# https://www.stats.ox.ac.uk/pub/bdr/memtests/clang-UBSAN/fastTopics/
+# https://www.stats.ox.ac.uk/pub/bdr/memtests/README.txt
+# https://github.com/rocker-org/r-devel-san-clang
+pwd
+# /Users/pcarbone/Desktop
+docker pull --platform linux/x86_64 rocker/r-devel-ubsan-clang
+docker run -lm -v $(pwd):/data -ti rocker/r-devel-ubsan-clang
+cd /data
+apt-get update
+apt-get install cmake
+Rdevel --no-save
+> install.packages("rmarkdown")
+> install.packages("remotes")
+> library(remotes)
+> install_github("RcppCore/RcppParallel")
+# Remove plotly from Imports and NAMESPACE.
+> install_local("fastTopics",upgrade="never",dependencies=T,force=T)
+> q()
+cd fastTopics
+cd vignettes
+export UBSAN_OPTIONS="print_stacktrace=1"
+Rscriptdevel --vanilla single_cell_rnaseq_basic.R \
+  > single_cell_rnaseq_basic.out 2> single_cell_rnaseq_basic.err

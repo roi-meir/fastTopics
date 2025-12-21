@@ -32,7 +32,9 @@ inline void scd_update_factor_sparse (const sp_mat& A, const mat& W,
 				      unsigned int numiter, double e) {
   vec          a = nonzeros(A.col(j));
   unsigned int n = a.n_elem;
-  uvec         i(n);
+  if (n == 0)
+    return;
+  uvec i(n);
   getcolnonzeros(A,i,j);
   H.col(j) = scd_kl_update(W.rows(i),sumw,a,H.col(j),numiter,e);
 }

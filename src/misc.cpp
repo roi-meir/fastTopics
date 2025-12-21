@@ -94,26 +94,41 @@ void getcolnonzeros (const sp_mat& A, uvec& i, unsigned int j) {
     i(t) = ai.row();
 }
 
-// Scale each column A[,i] by b[i].
+// Scale each column A[,j] by b[j].
 void scalecols (mat& A, const vec& b) {
-  rowvec c = trans(b);
-  A.each_row() %= c;
+  unsigned int n = A.n_rows;
+  unsigned int m = A.n_cols;
+  for (unsigned int j = 0; j < m; j++)
+    for (unsigned int i = 0; i < n; i++)
+      A(i,j) *= b(j);
 }
 
 // Normalize each row of A so that the entries in each row sum to 1.
 void normalizerows (mat& A) {
+  unsigned int n = A.n_rows;
+  unsigned int m = A.n_cols;
   vec b = conv_to<vec>::from(sum(A,1));
-  A.each_col() /= b;
+  for (unsigned int i = 0; i < n; i++)
+    for (unsigned int j = 0; j < m; j++)
+      A(i,j) /= b(i);
 }
 
 // Normalize each column of A so that the entries in each column sum to 1.
 void normalizecols (mat& A) {
+  unsigned int n = A.n_rows;
+  unsigned int m = A.n_cols;
   rowvec b = sum(A,0);
-  A.each_row() /= b;
+  for (unsigned int j = 0; j < m; j++)
+    for (unsigned int i = 0; i < n; i++)
+      A(i,j) /= b(j);
 }
 
 // Scale each row of A so that the largest entry in each row is 1.
 void normalizerowsbymax (mat& A) {
+  unsigned int n = A.n_rows;
+  unsigned int m = A.n_cols;
   vec b = conv_to<vec>::from(max(A,1));
-  A.each_col() /= b;
+  for (unsigned int i = 0; i < n; i++)
+    for (unsigned int j = 0; j < m; j++)
+      A(i,j) /= b(i);
 }
