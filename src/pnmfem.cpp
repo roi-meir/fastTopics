@@ -26,7 +26,7 @@ inline vec pnmfem_update_factor_sparse (const sp_mat& X, const mat& F,
   unsigned int n = x.n_elem;
   vec          f = F.col(j);
   if (n == 0)
-    return;
+    return f;
   uvec i(n);
   getcolnonzeros(X,i,j);
   poismixem(L1,u,x,i,f,numiter);
