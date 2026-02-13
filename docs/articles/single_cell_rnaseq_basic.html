@@ -6,20 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Analysis of single-cell RNA-seq data using a topic model, Part 1: basic concepts • fastTopics</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Analysis of single-cell RNA-seq data using a topic model, Part 1: basic concepts">
-<meta property="og:description" content="fastTopics">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -33,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fastTopics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6-150</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7-38</span>
       </span>
     </div>
 
@@ -61,7 +60,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -71,7 +70,7 @@ topic model, Part 1: basic concepts</h1>
                         <h4 data-toc-skip class="author">Peter
 Carbonetto</h4>
             
-            <h4 data-toc-skip class="date">2023-03-14</h4>
+            <h4 data-toc-skip class="date">2026-02-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/stephenslab/fastTopics/blob/HEAD/vignettes/single_cell_rnaseq_basic.Rmd" class="external-link"><code>vignettes/single_cell_rnaseq_basic.Rmd</code></a></small>
       <div class="hidden name"><code>single_cell_rnaseq_basic.Rmd</code></div>
@@ -95,11 +94,11 @@ data.</p>
 <p>We begin our analysis by loading the packages. Then we set the seed
 so that the results can be reproduced.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://Matrix.R-forge.R-project.org/" class="external-link">Matrix</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stephenslab/fastTopics" class="external-link">fastTopics</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://Matrix.R-forge.R-project.org" class="external-link">Matrix</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stephenslab.github.io/fastTopics/" class="external-link">fastTopics</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-example-data-set">The example data set<a class="anchor" aria-label="anchor" href="#the-example-data-set"></a>
 </h2>
@@ -110,20 +109,23 @@ bead-enriched subpopulations of peripheral blood mononuclear cells
 (PBMCs). The original data set is much larger—for this introduction, we
 have taken a small subset of approximately 3,700 cells.</p>
 <p>The data we will analyze are unique molecular identifier (UMI)
-counts. These data are stored as an <span class="math inline">\(n \times
-m\)</span> sparse matrix, where <span class="math inline">\(n\)</span>
-is the number of cells and <span class="math inline">\(m\)</span> is the
-number of genes:</p>
+counts. These data are stored as an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">n \times m</annotation></semantics></math>
+sparse matrix, where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+is the number of cells and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+is the number of genes:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pbmc_facs</span><span class="op">)</span>
-<span class="va">counts</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">counts</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>
-<span class="co"># [1]  3774 16791</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pbmc_facs</span><span class="op">)</span></span>
+<span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">counts</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></span>
+<span><span class="co"># [1]  3774 16791</span></span></code></pre></div>
 <p>The UMI counts are “sparse”—that is, most of the counts are zero.
 Indeed, over 95% of the UMI counts are zero:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>
-<span class="co"># [1] 0.04265257</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">counts</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co"># [1] 0.04265257</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="no-need-to-normalize-or-transform">No need to normalize or transform<a class="anchor" aria-label="anchor" href="#no-need-to-normalize-or-transform"></a>
@@ -145,16 +147,20 @@ analysis.</p>
 step of the analysis: fitting the topic model to the UMI count data.
 This is accomplished with a call to <code>fit_topic_model</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_topic_model.html">fit_topic_model</a></span><span class="op">(</span><span class="va">counts</span>,k <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_topic_model.html">fit_topic_model</a></span><span class="op">(</span><span class="va">counts</span>,k <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div>
 <p>Note it may take several minutes to fit the topic model on this data
 set. For convenience, we saved the output from this call:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">fit</span></code></pre></div>
-<p>To fit a topic model, we must specify <span class="math inline">\(K\)</span>, the number of topics. Here, we have
-chosen <span class="math inline">\(K = 6\)</span> topics. In most
-settings, a good choice of <span class="math inline">\(K\)</span> will
-not be known in advance, so you will you want to explore the results
-from topic models at different settings of <span class="math inline">\(K\)</span>.</p>
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">fit</span></span></code></pre></div>
+<p>To fit a topic model, we must specify
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>,
+the number of topics. Here, we have chosen
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">K = 6</annotation></semantics></math>
+topics. In most settings, a good choice of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+will not be known in advance, so you will you want to explore the
+results from topic models at different settings of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>.</p>
 <p>The <code>fit_topic_model</code> interface is intended to hide the
 details of model fitting, and it should work well for many data sets.
 Larger or more complex data sets my require some fine-tuning of the
@@ -164,29 +170,34 @@ model fitting. See <a href="https://stephenslab.github.io/fastTopics/articles/si
 <div class="section level2">
 <h2 id="each-cell-is-represented-as-a-unique-combination-of-topics">Each cell is represented as a unique combination of topics<a class="anchor" aria-label="anchor" href="#each-cell-is-represented-as-a-unique-combination-of-topics"></a>
 </h2>
-<p>A key feature of the topic model is that each cell <span class="math inline">\(i\)</span> is represented as a <em>unique
-combination of the topics.</em> Therefore, each cell can be summarized
-by the <span class="math inline">\(K\)</span> topic proportions. These
-cell-specific proportions are learned from the data. In ‘fastTopics’,
-the topic proportions for all cells are stored in an <span class="math inline">\(n \times K\)</span> matrix:</p>
+<p>A key feature of the topic model is that each cell
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+is represented as a <em>unique combination of the topics.</em>
+Therefore, each cell can be summarized by the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+topic proportions. These cell-specific proportions are learned from the
+data. In ‘fastTopics’, the topic proportions for all cells are stored in
+an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">n \times K</annotation></semantics></math>
+matrix:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">L</span><span class="op">)</span>
-<span class="co"># [1] 3774    6</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">L</span><span class="op">)</span></span>
+<span><span class="co"># [1] 3774    6</span></span></code></pre></div>
 <p>To illustrate, here is a cell in which the pattern of expression is
 almost fully captured by the fourth topic:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">rows</span> <span class="op">&lt;-</span> <span class="st">"GATATATGTCAGTG-1-b_cells"</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">L</span><span class="op">[</span><span class="va">rows</span>,<span class="op">]</span>,digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="co">#    k1    k2    k3    k4    k5    k6 </span>
-<span class="co"># 0.000 0.000 0.000 0.985 0.015 0.000</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">rows</span> <span class="op">&lt;-</span> <span class="st">"GATATATGTCAGTG-1-b_cells"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">L</span><span class="op">[</span><span class="va">rows</span>,<span class="op">]</span>,digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#    k1    k2    k3    k4    k5    k6 </span></span>
+<span><span class="co"># 0.000 0.000 0.000 0.985 0.015 0.000</span></span></code></pre></div>
 <p>Here are two more examples:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GACAGTACCTGTGA-1-memory_t"</span>,
-          <span class="st">"TGAAGCACACAGCT-1-b_cells"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">L</span><span class="op">[</span><span class="va">rows</span>,<span class="op">]</span>,digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
-<span class="co">#                           k1    k2    k3    k4    k5    k6</span>
-<span class="co"># GACAGTACCTGTGA-1-memory_t  0 0.002 0.002 0.000 0.087 0.909</span>
-<span class="co"># TGAAGCACACAGCT-1-b_cells   0 0.000 0.058 0.657 0.000 0.285</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GACAGTACCTGTGA-1-memory_t"</span>,</span>
+<span>          <span class="st">"TGAAGCACACAGCT-1-b_cells"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">L</span><span class="op">[</span><span class="va">rows</span>,<span class="op">]</span>,digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#                           k1    k2    k3    k4    k5    k6</span></span>
+<span><span class="co"># GACAGTACCTGTGA-1-memory_t  0 0.002 0.002 0.000 0.087 0.909</span></span>
+<span><span class="co"># TGAAGCACACAGCT-1-b_cells   0 0.000 0.058 0.657 0.000 0.285</span></span></code></pre></div>
 <p>The last example is interesting because the observed expression is
 best captured by a combination of topics 4 and 6.</p>
 <p>To make sense of these results, we first need to understand the
@@ -203,18 +214,18 @@ fluorescence-activated cell sorting (FACS). Each cell is assigned one of
 five labels (each corresponding to a cell type): B cells, CD14+
 monocytes, CD34+ cells, natural killer (NK) cells, and T cells.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">samples</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">samples</span><span class="op">$</span><span class="va">subpop</span><span class="op">)</span>
-<span class="co">#  B cell   CD14+   CD34+ NK cell  T cell </span>
-<span class="co">#     767     163     687     673    1484</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">samples</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">samples</span><span class="op">$</span><span class="va">subpop</span><span class="op">)</span></span>
+<span><span class="co">#  B cell   CD14+   CD34+ NK cell  T cell </span></span>
+<span><span class="co">#     767     163     687     673    1484</span></span></code></pre></div>
 <p>Create a “Structure plot” to visualize the relationship between the
 cell labels and the topic proportions:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">topic_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"skyblue"</span>,<span class="st">"forestgreen"</span>,<span class="st">"darkmagenta"</span>,<span class="st">"dodgerblue"</span>,
-                  <span class="st">"gold"</span>,<span class="st">"darkorange"</span><span class="op">)</span>
-<span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">fit</span>,colors <span class="op">=</span> <span class="va">topic_colors</span>,topics <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,gap <span class="op">=</span> <span class="fl">25</span>,
-               grouping <span class="op">=</span> <span class="va">samples</span><span class="op">$</span><span class="va">subpop</span><span class="op">)</span></code></pre></div>
-<p><img src="single_cell_rnaseq_basic_files/figure-html/structure-plot-with-celltype-labels-1.png" width="900" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="va">topic_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"skyblue"</span>,<span class="st">"forestgreen"</span>,<span class="st">"darkmagenta"</span>,<span class="st">"dodgerblue"</span>,</span>
+<span>                  <span class="st">"gold"</span>,<span class="st">"darkorange"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">fit</span>,colors <span class="op">=</span> <span class="va">topic_colors</span>,topics <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,gap <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>               grouping <span class="op">=</span> <span class="va">samples</span><span class="op">$</span><span class="va">subpop</span><span class="op">)</span></span></code></pre></div>
+<p><img src="single_cell_rnaseq_basic_files/figure-html/structure-plot-with-celltype-labels-1.png" class="r-plt" width="900" style="display: block; margin: auto;"></p>
 <p>The Structure plot is a stacked bar chart in which each topic is
 represented as a bar of a different colour, and the bar heights are the
 topic proportions. Patterns begin to emerge when the cells are arranged
@@ -239,40 +250,43 @@ that model to predict topics for cells that were not used to train the
 model. We illustrate this with a separate collection of 100 cells drawn
 from the same PBMC data set:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">counts_test</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">counts_test</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">counts_test</span><span class="op">)</span>
-<span class="co"># [1]   100 16791</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">counts_test</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">counts_test</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">counts_test</span><span class="op">)</span></span>
+<span><span class="co"># [1]   100 16791</span></span></code></pre></div>
 <p>The “predict” function estimates the topic proportions based on a
 previously fit topic model.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">Ltest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>,<span class="va">counts_test</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">Ltest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>,<span class="va">counts_test</span><span class="op">)</span></span></code></pre></div>
 <p>The predictions appear to align well with the provided cell
 labels:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fit_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>F <span class="op">=</span> <span class="va">fit</span><span class="op">$</span><span class="cn">F</span>,L <span class="op">=</span> <span class="va">Ltest</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fit_test</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"multinom_topic_model_fit"</span>,<span class="st">"list"</span><span class="op">)</span>
-<span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">fit_test</span>,topics <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,colors <span class="op">=</span> <span class="va">topic_colors</span>,gap <span class="op">=</span> <span class="fl">2</span>,
-               grouping <span class="op">=</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">samples_test</span><span class="op">$</span><span class="va">subpop</span><span class="op">)</span></code></pre></div>
-<p><img src="single_cell_rnaseq_basic_files/figure-html/structure-plot-test-1.png" width="900" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="va">fit_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>F <span class="op">=</span> <span class="va">fit</span><span class="op">$</span><span class="cn">F</span>,L <span class="op">=</span> <span class="va">Ltest</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fit_test</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"multinom_topic_model_fit"</span>,<span class="st">"list"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">fit_test</span>,topics <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,colors <span class="op">=</span> <span class="va">topic_colors</span>,gap <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>               grouping <span class="op">=</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">samples_test</span><span class="op">$</span><span class="va">subpop</span><span class="op">)</span></span></code></pre></div>
+<p><img src="single_cell_rnaseq_basic_files/figure-html/structure-plot-test-1.png" class="r-plt" width="900" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="topics-capture-patterns-of-relative-expression">Topics capture patterns of relative expression<a class="anchor" aria-label="anchor" href="#topics-capture-patterns-of-relative-expression"></a>
 </h2>
-<p>Each topic is represented as a vector of <span class="math inline">\(m\)</span> expression levels which are stored as
-an <span class="math inline">\(m \times K\)</span> matrix:</p>
+<p>Each topic is represented as a vector of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+expression levels which are stored as an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>×</mo><mi>K</mi></mrow><annotation encoding="application/x-tex">m \times K</annotation></semantics></math>
+matrix:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="cn">F</span><span class="op">)</span>
-<span class="co"># [1] 16791     6</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co"># [1] 16791     6</span></span></code></pre></div>
 <p>These expression levels are comparable across topics. For example,
 genes <em>CD79A</em> are <em>CD79B</em> are important to B cells, so we
 would expect higher expression in topic 4:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genes</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">genes</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="cn">F</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79B"</span>,<span class="op">]</span>,
-      <span class="va">fit</span><span class="op">$</span><span class="cn">F</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79A"</span>,<span class="op">]</span><span class="op">)</span>
-<span class="co">#                k1           k2           k3          k4           k5         k6</span>
-<span class="co"># [1,] 4.007731e-05 8.923875e-19 3.069143e-19 0.002135105 1.991487e-04 3.4455e-19</span>
-<span class="co"># [2,] 4.589634e-19 8.923875e-19 3.069143e-19 0.002747011 5.998699e-19 3.4455e-19</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">genes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="cn">F</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79B"</span>,<span class="op">]</span>,</span>
+<span>      <span class="va">fit</span><span class="op">$</span><span class="cn">F</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79A"</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#                k1           k2           k3          k4           k5         k6</span></span>
+<span><span class="co"># [1,] 4.007731e-05 8.923875e-19 3.069143e-19 0.002135105 1.991487e-04 3.4455e-19</span></span>
+<span><span class="co"># [2,] 4.589634e-19 8.923875e-19 3.069143e-19 0.002747011 5.998699e-19 3.4455e-19</span></span></code></pre></div>
 <p>The most informative genes are those with higher expression in one
 topic compared to the other topics. In the next section we explain how
 to identify these genes.</p>
@@ -291,31 +305,37 @@ described <a href="https://doi.org/10.1101/2023.03.03.531029" class="external-li
 This “grade of membership” (GoM) differential expression analysis is
 implemented by the function <code>de_analysis</code>:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="va">de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/de_analysis.html">de_analysis</a></span><span class="op">(</span><span class="va">fit</span>,<span class="va">counts</span>,pseudocount <span class="op">=</span> <span class="fl">0.1</span>,
-                  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ns <span class="op">=</span> <span class="fl">1e4</span>,nc <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/de_analysis.html">de_analysis</a></span><span class="op">(</span><span class="va">fit</span>,<span class="va">counts</span>,pseudocount <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ns <span class="op">=</span> <span class="fl">1e4</span>,nc <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Since this computation can take 10 minutes or more to run, we have
 provided the output of this <code>de_analysis</code> call in the
-<code>pbmc_facs</code> data set:</p>
+<code>pbmc_facs</code> data set. Since the <code>de_analysis</code>
+output is quite large, we have made this available outside the
+package:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">de</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">de</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbmc_facs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".RData"</span><span class="op">)</span></span>
+<span><span class="va">pbmc_facs_url</span> <span class="op">&lt;-</span> <span class="st">"https://stephenslab.github.io/fastTopics/pbmc_facs.RData"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">pbmc_facs_url</span>,<span class="va">pbmc_facs_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="va">pbmc_facs_file</span><span class="op">)</span></span>
+<span><span class="va">de</span> <span class="op">&lt;-</span> <span class="va">pbmc_facs</span><span class="op">$</span><span class="va">de</span></span></code></pre></div>
 <p>The GoM DE analysis generates LFC estimates that have a similar
 interpretation to a standard DE analysis. To illustrate, the GoM DE
 analysis estimates strong overexpression of B-cell genes <em>CD79A</em>
 and <em>CD79B</em> in topic 4:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">de</span><span class="op">$</span><span class="va">postmean</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79A"</span>,<span class="op">]</span>,
-      <span class="va">de</span><span class="op">$</span><span class="va">postmean</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79B"</span>,<span class="op">]</span><span class="op">)</span>
-<span class="co">#                k1           k2           k3       k4          k5           k6</span>
-<span class="co"># [1,] -0.008597818  0.008222993 -0.009362584 8.470222 0.004304411 -0.004352951</span>
-<span class="co"># [2,] -0.006685120 -0.003701642 -0.012284438 3.549019 1.876867972 -0.002461657</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">de</span><span class="op">$</span><span class="va">postmean</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79A"</span>,<span class="op">]</span>,</span>
+<span>      <span class="va">de</span><span class="op">$</span><span class="va">postmean</span><span class="op">[</span><span class="va">genes</span><span class="op">$</span><span class="va">symbol</span> <span class="op">==</span> <span class="st">"CD79B"</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#                k1           k2           k3       k4          k5           k6</span></span>
+<span><span class="co"># [1,] -0.008597818  0.008222993 -0.009362584 8.470222 0.004304411 -0.004352951</span></span>
+<span><span class="co"># [2,] -0.006685120 -0.003701642 -0.012284438 3.549019 1.876867972 -0.002461657</span></span></code></pre></div>
 <p>Ultimately, we would like to discover genes most relevant to a topic,
 not just report LFC estimates for known genes. A common approach is to
 visualize the results of the DE analysis using a volcano plot. For
 example, here is the volcano plot for topic 4:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">de</span>,k <span class="op">=</span> <span class="fl">4</span>,labels <span class="op">=</span> <span class="va">genes</span><span class="op">$</span><span class="va">symbol</span><span class="op">)</span></code></pre></div>
-<p><img src="single_cell_rnaseq_basic_files/figure-html/volcano-plot-bcells-1.png" width="540" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">de</span>,k <span class="op">=</span> <span class="fl">4</span>,labels <span class="op">=</span> <span class="va">genes</span><span class="op">$</span><span class="va">symbol</span><span class="op">)</span></span></code></pre></div>
+<p><img src="single_cell_rnaseq_basic_files/figure-html/volcano-plot-bcells-1.png" class="r-plt" width="540" style="display: block; margin: auto;"></p>
 <p>Typically, the most interesting genes are found on the right-hand
 side of the volcano plot—that is, genes with large LFC—so long as they
 have a small lfsr (local false sign rate). Indeed, B cell gene
@@ -324,14 +344,14 @@ have a small lfsr (local false sign rate). Indeed, B cell gene
 <em>GNLY</em> emerge on the right-hand side of the volcano plot for
 topic 1:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">de</span>,k <span class="op">=</span> <span class="fl">1</span>,labels <span class="op">=</span> <span class="va">genes</span><span class="op">$</span><span class="va">symbol</span>,ymax <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
-<p><img src="single_cell_rnaseq_basic_files/figure-html/volcano-plot-nk-1.png" width="540" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">de</span>,k <span class="op">=</span> <span class="fl">1</span>,labels <span class="op">=</span> <span class="va">genes</span><span class="op">$</span><span class="va">symbol</span>,ymax <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<p><img src="single_cell_rnaseq_basic_files/figure-html/volcano-plot-nk-1.png" class="r-plt" width="540" style="display: block; margin: auto;"></p>
 <p>Some of the genes with the largest LFCs are <em>CD3D</em>,
 <em>CD3E</em> and <em>CD8B</em> which suggest topic 6 is capturing
 expression specific to T cells:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">de</span>,k <span class="op">=</span> <span class="fl">6</span>,labels <span class="op">=</span> <span class="va">genes</span><span class="op">$</span><span class="va">symbol</span>,ymax <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
-<p><img src="single_cell_rnaseq_basic_files/figure-html/volcano-plot-tcells-1.png" width="540" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/volcano_plot.html">volcano_plot</a></span><span class="op">(</span><span class="va">de</span>,k <span class="op">=</span> <span class="fl">6</span>,labels <span class="op">=</span> <span class="va">genes</span><span class="op">$</span><span class="va">symbol</span>,ymax <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<p><img src="single_cell_rnaseq_basic_files/figure-html/volcano-plot-tcells-1.png" class="r-plt" width="540" style="display: block; margin: auto;"></p>
 <p>See also <a href="https://stephenslab.github.io/fastTopics/articles/single_cell_rnaseq_practical.html" class="external-link">Part
 2</a> for more DE analysis examples.</p>
 </div>
@@ -341,55 +361,60 @@ expression specific to T cells:</p>
 <p>This is the version of R and the packages that were used to generate
 these results.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co"># R version 3.6.2 (2019-12-12)</span>
-<span class="co"># Platform: x86_64-apple-darwin15.6.0 (64-bit)</span>
-<span class="co"># Running under: macOS Catalina 10.15.7</span>
-<span class="co"># </span>
-<span class="co"># Matrix products: default</span>
-<span class="co"># BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib</span>
-<span class="co"># LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib</span>
-<span class="co"># </span>
-<span class="co"># locale:</span>
-<span class="co"># [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span>
-<span class="co"># </span>
-<span class="co"># attached base packages:</span>
-<span class="co"># [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
-<span class="co"># </span>
-<span class="co"># other attached packages:</span>
-<span class="co"># [1] cowplot_1.1.1      ggplot2_3.3.6      fastTopics_0.6-150 Matrix_1.2-18     </span>
-<span class="co"># </span>
-<span class="co"># loaded via a namespace (and not attached):</span>
-<span class="co">#  [1] httr_1.4.2         sass_0.4.0         tidyr_1.1.3        jsonlite_1.7.2    </span>
-<span class="co">#  [5] viridisLite_0.3.0  bslib_0.3.1        RcppParallel_5.1.5 assertthat_0.2.1  </span>
-<span class="co">#  [9] highr_0.8          mixsqp_0.3-46      progress_1.2.2     yaml_2.2.0        </span>
-<span class="co"># [13] ggrepel_0.9.1      pillar_1.6.2       backports_1.1.5    lattice_0.20-38   </span>
-<span class="co"># [17] quadprog_1.5-8     quantreg_5.54      glue_1.4.2         digest_0.6.23     </span>
-<span class="co"># [21] colorspace_1.4-1   htmltools_0.5.4    pkgconfig_2.0.3    invgamma_1.1      </span>
-<span class="co"># [25] SparseM_1.78       purrr_0.3.4        scales_1.1.0       Rtsne_0.15        </span>
-<span class="co"># [29] MatrixModels_0.4-1 tibble_3.1.3       farver_2.0.1       generics_0.0.2    </span>
-<span class="co"># [33] ellipsis_0.3.2     withr_2.5.0        ashr_2.2-54        pbapply_1.5-1     </span>
-<span class="co"># [37] lazyeval_0.2.2     cli_3.5.0          magrittr_2.0.1     crayon_1.4.1      </span>
-<span class="co"># [41] memoise_1.1.0      mcmc_0.9-6         evaluate_0.14      fs_1.5.2          </span>
-<span class="co"># [45] fansi_0.4.0        MASS_7.3-51.4      truncnorm_1.0-8    prettyunits_1.1.1 </span>
-<span class="co"># [49] tools_3.6.2        data.table_1.12.8  hms_1.1.0          lifecycle_1.0.3   </span>
-<span class="co"># [53] stringr_1.4.0      MCMCpack_1.4-5     plotly_4.10.1      munsell_0.5.0     </span>
-<span class="co"># [57] irlba_2.3.3        compiler_3.6.2     pkgdown_2.0.2      jquerylib_0.1.4   </span>
-<span class="co"># [61] systemfonts_1.0.2  rlang_1.0.6        grid_3.6.2         htmlwidgets_1.6.1 </span>
-<span class="co"># [65] labeling_0.3       rmarkdown_2.11     gtable_0.3.0       DBI_1.1.0         </span>
-<span class="co"># [69] R6_2.4.1           knitr_1.37         dplyr_1.0.7        uwot_0.1.10       </span>
-<span class="co"># [73] fastmap_1.1.0      utf8_1.1.4         rprojroot_1.3-2    ragg_0.3.1        </span>
-<span class="co"># [77] desc_1.2.0         stringi_1.4.3      parallel_3.6.2     SQUAREM_2017.10-1 </span>
-<span class="co"># [81] Rcpp_1.0.8         vctrs_0.3.8        tidyselect_1.1.1   xfun_0.29         </span>
-<span class="co"># [85] coda_0.19-3</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># R version 4.3.3 (2024-02-29)</span></span>
+<span><span class="co"># Platform: aarch64-apple-darwin20 (64-bit)</span></span>
+<span><span class="co"># Running under: macOS 15.7.1</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Matrix products: default</span></span>
+<span><span class="co"># BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib </span></span>
+<span><span class="co"># LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># locale:</span></span>
+<span><span class="co"># [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># time zone: America/Chicago</span></span>
+<span><span class="co"># tzcode source: internal</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># attached base packages:</span></span>
+<span><span class="co"># [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># other attached packages:</span></span>
+<span><span class="co"># [1] cowplot_1.1.3     ggplot2_4.0.1     fastTopics_0.7-38 Matrix_1.6-5     </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#  [1] gtable_0.3.6        xfun_0.52           bslib_0.9.0        </span></span>
+<span><span class="co">#  [4] htmlwidgets_1.6.4   ggrepel_0.9.6       lattice_0.22-5     </span></span>
+<span><span class="co">#  [7] quadprog_1.5-8      vctrs_0.6.5         tools_4.3.3        </span></span>
+<span><span class="co"># [10] generics_0.1.4      parallel_4.3.3      tibble_3.3.0       </span></span>
+<span><span class="co"># [13] pkgconfig_2.0.3     data.table_1.17.6   SQUAREM_2021.1     </span></span>
+<span><span class="co"># [16] RColorBrewer_1.1-3  S7_0.2.0            desc_1.4.3         </span></span>
+<span><span class="co"># [19] RcppParallel_5.1.10 lifecycle_1.0.4     truncnorm_1.0-9    </span></span>
+<span><span class="co"># [22] stringr_1.5.1       compiler_4.3.3      farver_2.1.2       </span></span>
+<span><span class="co"># [25] textshaping_0.3.7   progress_1.2.3      RhpcBLASctl_0.23-42</span></span>
+<span><span class="co"># [28] htmltools_0.5.8.1   sass_0.4.10         yaml_2.3.10        </span></span>
+<span><span class="co"># [31] lazyeval_0.2.2      plotly_4.11.0       pillar_1.11.0      </span></span>
+<span><span class="co"># [34] pkgdown_2.2.0.9000  crayon_1.5.3        jquerylib_0.1.4    </span></span>
+<span><span class="co"># [37] tidyr_1.3.1         uwot_0.2.3          cachem_1.1.0       </span></span>
+<span><span class="co"># [40] gtools_3.9.5        tidyselect_1.2.1    digest_0.6.37      </span></span>
+<span><span class="co"># [43] stringi_1.8.7       Rtsne_0.17          dplyr_1.1.4        </span></span>
+<span><span class="co"># [46] reshape2_1.4.4      purrr_1.0.4         ashr_2.2-66        </span></span>
+<span><span class="co"># [49] labeling_0.4.3      fastmap_1.2.0       grid_4.3.3         </span></span>
+<span><span class="co"># [52] cli_3.6.5           invgamma_1.2        magrittr_2.0.3     </span></span>
+<span><span class="co"># [55] dichromat_2.0-0.1   withr_3.0.2         prettyunits_1.2.0  </span></span>
+<span><span class="co"># [58] scales_1.4.0        rmarkdown_2.29      httr_1.4.7         </span></span>
+<span><span class="co"># [61] ragg_1.4.0          hms_1.1.3           pbapply_1.7-2      </span></span>
+<span><span class="co"># [64] evaluate_1.0.4      knitr_1.50          irlba_2.3.5.1      </span></span>
+<span><span class="co"># [67] viridisLite_0.4.2   rlang_1.1.6         Rcpp_1.1.0         </span></span>
+<span><span class="co"># [70] mixsqp_0.3-54       glue_1.8.0          jsonlite_2.0.0     </span></span>
+<span><span class="co"># [73] plyr_1.8.9          R6_2.6.1            systemfonts_1.2.3  </span></span>
+<span><span class="co"># [76] fs_1.6.6</span></span></code></pre></div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -397,23 +422,21 @@ these results.</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Peter Carbonetto, Kevin Luo, Kushal Dey, Matthew
-Stephens.</p>
+<p>Developed by Peter Carbonetto, Kevin Luo, Kushal Dey, Matthew Stephens.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
