@@ -213,7 +213,7 @@ volcano plot for the T cells topic:
 
 ```{r volcano-plotly, warning=FALSE}
 genes <- pbmc_facs$genes
-p <- volcano_plotly(de,k = 6,file = "volcano_plot_t_cells.html",
+p <- volcano_plotly(pbmc_facs$de,k = 6,file = "volcano_plot_t_cells.html",
                     labels = genes$symbol,ymax = 100)
 ```
 
