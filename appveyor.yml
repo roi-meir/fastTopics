@@ -24,7 +24,7 @@ environment:
 build_script:
   - R -e "install.packages('remotes', repos='http://cran.wustl.edu')"
   - R -e "remotes::install_deps('.', dependencies=TRUE, repos='http://cran.wustl.edu')"
-  - R -e "install.packages('S7', repos='http://cran.wustl.edu')"
+  - R -e "install.packages('S7', repos='http://cran.wustl.edu', type='binary')"
 
 test_script:
   - travis-tool.sh run_tests
