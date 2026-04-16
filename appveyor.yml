@@ -21,10 +21,9 @@ environment:
     R_ARCH: x64
     R_CHECK_ARGS: --no-manual --no-examples --as-cran
 
-# This is the minimal set of R packages needed to run "R CMD check" on
-# the package.
 build_script:
-  - R -e install.packages(c('remotes','devtools','testthat','quadprog','gtools','irlba','Rtsne','uwot','dplyr','rlang','tidyr','Rcpp','RcppArmadillo','RcppParallel','RhpcBLASctl','progress','pbapply','ggplot2','cowplot','plotly','htmlwidgets','ggrepel','ashr','reshape2', 'S7'),head(.libPaths(),1),'http://cran.wustl.edu')
+  - R -e "install.packages('remotes', repos='http://cran.wustl.edu')"
+  - R -e "remotes::install_deps('.', dependencies=TRUE, repos='http://cran.wustl.edu')"
 
 test_script:
   - travis-tool.sh run_tests
