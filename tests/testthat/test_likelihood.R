@@ -1,12 +1,12 @@
 context("likelihood")
 
-test_that(paste("R and Rcpp versions of cost function return same result",
-                "for sparse and dense matrix"),{
+test_that(paste("R, Rcpp and Rcpp_parallel versions of cost function return",
+                "same result for sparse and dense matrix"),{
   set.seed(1)
 
   # Repeat the tests for a few different choices of k.
   for (k in 1:4)  {
-      
+
     # Generate a data set.
     out <- simulate_count_data(10,8,k)
     X   <- out$X
@@ -19,11 +19,15 @@ test_that(paste("R and Rcpp versions of cost function return same result",
     f2 <- cost(X,L,t(F),version = "Rcpp")
     f3 <- cost(Y,L,t(F),version = "R")
     f4 <- cost(Y,L,t(F),version = "Rcpp")
-  
+    f5 <- cost(X,L,t(F),version = "Rcpp_parallel")
+    f6 <- cost(Y,L,t(F),version = "Rcpp_parallel")
+
     # The cost function calculations should all give the same result.
     expect_equal(f1,f2)
     expect_equal(f1,f3)
     expect_equal(f1,f4)
+    expect_equal(f1,f5)
+    expect_equal(f1,f6)
   }
 })
 
@@ -108,7 +112,7 @@ test_that(paste("deviance_poisson_topic_nmf gives correct result for sparse",
 
 test_that("poisson_nmf_kkt gives same result for sparse and dense matrices",{
 
-  # Generate a data set.  
+  # Generate a data set.
   set.seed(1)
   out <- simulate_count_data(10,8,3)
   X   <- out$X
@@ -119,6 +123,25 @@ test_that("poisson_nmf_kkt gives same result for sparse and dense matrices",{
   out1 <- poisson_nmf_kkt(X,F,L)
   out2 <- poisson_nmf_kkt(as(X,"CsparseMatrix"),F,L)
   expect_equal(out1,out2,tolerance = 1e-15,scale = 1)
+})
+
+test_that(paste("Rcpp and Rcpp_parallel versions of poisson_nmf_kkt give",
+                "same result for sparse matrix"),{
+
+  # Generate a data set.
+  set.seed(1)
+  for (k in 1:4) {
+    out <- simulate_count_data(10,8,k)
+    Y   <- as(out$X,"CsparseMatrix")
+    F   <- out$F
+    L   <- out$L
+
+    # Compute KKT residuals with both versions and confirm they agree.
+    out1 <- poisson_nmf_kkt(Y,F,L,version = "Rcpp")
+    out2 <- poisson_nmf_kkt(Y,F,L,version = "Rcpp_parallel")
+    expect_equal(out1$F,out2$F,tolerance = 1e-14,scale = 1)
+    expect_equal(out1$L,out2$L,tolerance = 1e-14,scale = 1)
+  }
 })
 
 test_that(paste("loglik_poisson_nmf and loglik_multinom_topic_model give",

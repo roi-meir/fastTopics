@@ -93,7 +93,7 @@ cost <- function (X, A, B, e = 1e-8, family = c("poisson","multinom"),
     A <- matrix(A)
   if (!is.matrix(B))
     B <- matrix(B,1,ncol(X))
-    
+
   # Check and process "model" and "version" input arguments.
   family  <- match.arg(family)
   poisson <- family == "poisson"
@@ -101,7 +101,7 @@ cost <- function (X, A, B, e = 1e-8, family = c("poisson","multinom"),
     if (is.matrix(X))
       version <- "R"
     else
-      version <- "Rcpp"
+      version <- "Rcpp_parallel"
   }
 
   # Compute the terms in the log-likelihoods that depend on A or B.
@@ -109,6 +109,11 @@ cost <- function (X, A, B, e = 1e-8, family = c("poisson","multinom"),
     AB <- A %*% B
     f  <- rowSums(poisson*AB - X*log(AB + e))
   } else if (version == "Rcpp") {
+    if (is.matrix(X))
+      f <- drop(cost_rcpp(X,A,B,e,poisson))
+    else
+      f <- drop(cost_sparse_rcpp(X,A,B,e,poisson))
+  } else if (version == "Rcpp_parallel") {
     if (is.matrix(X))
       f <- drop(cost_parallel_rcpp(X,A,B,e,poisson))
     else
@@ -179,11 +184,20 @@ deviance_poisson_const <- function (X) {
 # Compute the residuals of the first-order Karush-Kuhn-Tucker (KKT)
 # conditions for Poisson non-negative matrix factorization at solution
 # estimate (F,L).
-poisson_nmf_kkt <- function (X, F, L, e = 1e-8) {
+#' @importFrom Matrix sparseMatrix
+poisson_nmf_kkt <- function (X, F, L, e = 1e-8,
+                             version = c("Rcpp_parallel","Rcpp")) {
+  version <- match.arg(version)
   if (is.matrix(X)) {
     A <- X/(tcrossprod(L,F) + e)
     return(list(F = F*(t(1 - A) %*% L),
                 L = L*((1 - A) %*% F)))
+  } else if (version == "Rcpp") {
+    d <- summary(X)
+    y <- drop(x_over_crossprod_rcpp(d$i - 1,d$j - 1,d$x,t(L),t(F),e))
+    A <- sparseMatrix(i = d$i,j = d$j,x = y,dims = dim(X))
+    return(list(F = F*(repmat(colSums(L),ncol(X)) - as.matrix(t(A) %*% L)),
+                L = L*(repmat(colSums(F),nrow(X)) - as.matrix(A %*% F))))
   } else {
     result <- poisson_nmf_kkt_sparse_parallel_rcpp(X,L,F,e)
     return(list(F = F*(repmat(colSums(L),ncol(X)) - result$tAL),
