@@ -110,9 +110,9 @@ cost <- function (X, A, B, e = 1e-8, family = c("poisson","multinom"),
     f  <- rowSums(poisson*AB - X*log(AB + e))
   } else if (version == "Rcpp") {
     if (is.matrix(X))
-      f <- drop(cost_rcpp(X,A,B,e,poisson))
+      f <- drop(cost_parallel_rcpp(X,A,B,e,poisson))
     else
-      f <- drop(cost_sparse_rcpp(X,A,B,e,poisson))
+      f <- drop(cost_sparse_parallel_rcpp(X,A,B,e,poisson))
   }
   names(f) <- rownames(X)
   return(f)
@@ -185,9 +185,9 @@ poisson_nmf_kkt <- function (X, F, L, e = 1e-8) {
     return(list(F = F*(t(1 - A) %*% L),
                 L = L*((1 - A) %*% F)))
   } else {
-    A <- x_over_tcrossprod(X,t(L),t(F),e)
-    return(list(F = F*(repmat(colSums(L),ncol(X)) - as.matrix(t(A) %*% L)),
-                L = L*(repmat(colSums(F),nrow(X)) - as.matrix(A %*% F))))
+    result <- poisson_nmf_kkt_sparse_parallel_rcpp(X,L,F,e)
+    return(list(F = F*(repmat(colSums(L),ncol(X)) - result$tAL),
+                L = L*(repmat(colSums(F),nrow(X)) - result$AF)))
   }
 }
 
