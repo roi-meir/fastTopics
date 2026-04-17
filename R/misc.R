@@ -55,7 +55,7 @@ apply.nonzeros <- function (X, f) {
 #' 
 x_over_tcrossprod <- function (X, A, B, e) {
   d <- summary(X)
-  y <- drop(x_over_crossprod_rcpp(d$i - 1,d$j - 1,d$x,A,B,e))
+  y <- drop(x_over_crossprod_parallel_rcpp(d$i - 1,d$j - 1,d$x,A,B,e))
   return(sparseMatrix(i = d$i,j = d$j,x = y,dims = dim(X)))
 }
 
