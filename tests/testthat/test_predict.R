@@ -25,7 +25,8 @@ test_that(paste("Running project_poisson_nmf on the training data",
 
   # Simulate a 80 x 100 counts matrix.
   set.seed(1)
-  X <- simulate_count_data(80,100,k = 3)$X
+  dat <- simulate_count_data(80,100,k = 3)
+  X <- dat$X
 
   # Fit a Poisson non-negative matrix factorization to X.
   capture.output(fit <- init_poisson_nmf(X,F = dat$F,init.method = "random"))
