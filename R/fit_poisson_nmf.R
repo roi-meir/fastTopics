@@ -455,7 +455,7 @@ fit_poisson_nmf <- function (X, k, fit0, numiter = 100,
     cat(sprintf("Running at most %d %s updates, %s extrapolation ",
                 numiter,method.text,
                 ifelse(control$extrapolate,"with","without")))
-    cat("(fastTopics 0.7-41).\n")
+    cat("(fastTopics 0.7-42).\n")
   }
   
   # INITIALIZE ESTIMATES
@@ -554,7 +554,9 @@ fit_poisson_nmf_main_loop <- function (X, fit, numiter, update.factors,
     progress[i,"loglik.multinom"] <-
       loglik.const - fit$loss - sum(loglik_size_factors(X,fit$F,fit$L))
     progress[i,"dev"]         <- dev.const + 2*fit$loss
-    res <- with(poisson_nmf_kkt(X,fit$F,fit$L),
+    res <- with(poisson_nmf_kkt(X,fit$F,fit$L,
+                                version = ifelse(control$nc == 1,
+                                                 "Rcpp","RcppParallel")),
                 max(abs(rbind(F[update.factors,],
                               L[update.loadings,]))))
     progress[i,"res"]         <- res
@@ -647,7 +649,9 @@ update_poisson_nmf <- function (X, fit, update.factors, update.loadings,
 
   # Compute the value of the objective ("loss") function at the updated
   # estimates.
-  fit$loss      <- sum(cost(X,fit$L,t(fit$F),control$eps))
+  fit$loss <- sum(cost(X,fit$L,t(fit$F),control$eps,
+                       version = ifelse(control$nc == 1,
+                                        "Rcpp","RcppParallel")))
   fit$loss.fnly <- fit$loss
   
   # Output the updated "fit".
@@ -697,7 +701,9 @@ update_poisson_nmf_extrapolated <- function (X, fit, update.factors,
   # Compute the value of the objective (loss) function at the
   # extrapolated solution for the loadings (Ly) and the
   # non-extrapolated solution for the factors (Fn).
-  fit$loss.fnly <- sum(cost(X,fit$Ly,t(Fn),control$eps))
+  fit$loss.fnly <- sum(cost(X,fit$Ly,t(Fn),control$eps,
+                            version = ifelse(control$nc == 1,
+                                             "Rcpp","RcppParallel")))
 
   # Update the extrapolation parameters following Algorithm 3 of
   # Ang & Gillis (2019).

@@ -9,10 +9,10 @@ test_that(paste("R, Rcpp and Rcpp_parallel versions of cost function return",
 
     # Generate a data set.
     out <- simulate_count_data(10,8,k)
-    X   <- out$X
-    F   <- out$F
-    L   <- out$L
-    Y   <- as(X,"CsparseMatrix")
+    X <- out$X
+    F <- out$F
+    L <- out$L
+    Y <- as(X,"CsparseMatrix")
 
     # Compute the loss function.
     f1 <- cost(X,L,t(F),version = "R")
@@ -23,11 +23,11 @@ test_that(paste("R, Rcpp and Rcpp_parallel versions of cost function return",
     f6 <- cost(Y,L,t(F),version = "Rcpp_parallel")
 
     # The cost function calculations should all give the same result.
-    expect_equal(f1,f2)
-    expect_equal(f1,f3)
-    expect_equal(f1,f4)
-    expect_equal(f1,f5)
-    expect_equal(f1,f6)
+    expect_equal(f1,f2,scale = 1,tolerance = 1e-10)
+    expect_equal(f1,f3,scale = 1,tolerance = 1e-10)
+    expect_equal(f1,f4,scale = 1,tolerance = 1e-10)
+    expect_equal(f1,f5,scale = 1,tolerance = 1e-10)
+    expect_equal(f1,f6,scale = 1,tolerance = 1e-10)
   }
 })
 
@@ -40,19 +40,20 @@ test_that(paste("loglik_poisson_nmf gives correct result for sparse and",
       
     # Generate a data set.
     out <- simulate_count_data(10,8,k)
-    X   <- out$X
+    X <- out$X
+    Y <- as(X,"CsparseMatrix")
     fit <- out[c("F","L")]
     class(fit) <- c("poisson_nmf_fit","list")
-    
+
     # Compute the log-likelikhood.
     f1 <- loglik_poisson_nmf_with_dpois(X,fit)
     f2 <- loglik_poisson_nmf(X,fit,e = 0)
-    f3 <- loglik_poisson_nmf(as(X,"CsparseMatrix"),fit,e = 0)
+    f3 <- loglik_poisson_nmf(Y,fit,e = 0)
     names(f1) <- rownames(X)
 
     # The likelihood calculations should all be the same.
-    expect_equal(f1,f2)
-    expect_equal(f1,f3)
+    expect_equal(f1,f2,scale = 1,tolerance = 1e-10)
+    expect_equal(f1,f3,scale = 1,tolerance = 1e-10)
   }
 })
 

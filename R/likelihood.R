@@ -95,13 +95,13 @@ cost <- function (X, A, B, e = 1e-8, family = c("poisson","multinom"),
     B <- matrix(B,1,ncol(X))
 
   # Check and process "model" and "version" input arguments.
-  family  <- match.arg(family)
+  family <- match.arg(family)
   poisson <- family == "poisson"
   if (missing(version)) {
     if (is.matrix(X))
       version <- "R"
     else
-      version <- "Rcpp_parallel"
+      version <- "Rcpp"
   }
 
   # Compute the terms in the log-likelihoods that depend on A or B.
@@ -184,6 +184,7 @@ deviance_poisson_const <- function (X) {
 # Compute the residuals of the first-order Karush-Kuhn-Tucker (KKT)
 # conditions for Poisson non-negative matrix factorization at solution
 # estimate (F,L).
+#
 #' @importFrom Matrix sparseMatrix
 poisson_nmf_kkt <- function (X, F, L, e = 1e-8,
                              version = c("Rcpp_parallel","Rcpp")) {
@@ -198,10 +199,10 @@ poisson_nmf_kkt <- function (X, F, L, e = 1e-8,
     A <- sparseMatrix(i = d$i,j = d$j,x = y,dims = dim(X))
     return(list(F = F*(repmat(colSums(L),ncol(X)) - as.matrix(t(A) %*% L)),
                 L = L*(repmat(colSums(F),nrow(X)) - as.matrix(A %*% F))))
-  } else {
-    result <- poisson_nmf_kkt_sparse_parallel_rcpp(X,L,F,e)
-    return(list(F = F*(repmat(colSums(L),ncol(X)) - result$tAL),
-                L = L*(repmat(colSums(F),nrow(X)) - result$AF)))
+  } else if (version == "Rcpp_parallel") {
+    res <- poisson_nmf_kkt_sparse_parallel_rcpp(X,L,F,e)
+    return(list(F = F*(repmat(colSums(L),ncol(X)) - res$tAL),
+                L = L*(repmat(colSums(F),nrow(X)) - res$AF)))
   }
 }
 

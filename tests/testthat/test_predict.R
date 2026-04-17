@@ -17,7 +17,7 @@ test_that("project_poisson_nmf leaves the F matrix unchanged",{
 
   # Predict L in unseen (test) data points.
   capture.output(out <- project_poisson_nmf(test,F,numiter = 20))
-  expect_equal(rep(1,3),unname(diag(cor(out$F,F))),tolerance = 1e-8)
+  expect_equal(rep(1,3),unname(diag(cor(out$F,F))),scale=1,tolerance=1e-8)
 })
 
 test_that(paste("Running project_poisson_nmf on the training data",
@@ -32,5 +32,6 @@ test_that(paste("Running project_poisson_nmf on the training data",
   capture.output(fit <- init_poisson_nmf(X,F = dat$F,init.method = "random"))
   capture.output(fit <- fit_poisson_nmf(X,fit0 = fit))
   capture.output(out <- project_poisson_nmf(X,fit$F,numiter = 20))
-  expect_equal(rep(1,3),unname(diag(cor(out$L,fit$L))),tolerance = 1e-3)
+  expect_equal(rep(1,3),unname(diag(cor(out$L,fit$L))),scale=1,
+               tolerance=1e-3)
 })
