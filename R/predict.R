@@ -134,6 +134,8 @@ project_poisson_nmf <- function (X, F, numiter, ...) {
   rownames(L0) <- rownames(X)
   colnames(L0) <- colnames(F)
   fit <- init_poisson_nmf(X,F = F,L = L0)
-  fit <- fit_poisson_nmf(X,fit0 = fit,numiter = numiter,...)
+
+  # Fix the factors and update the loadings.
+  fit <- fit_poisson_nmf(X,fit0 = fit,numiter = numiter, update.factors = NULL, ...)
   return(fit)
 }
