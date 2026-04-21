@@ -455,7 +455,7 @@ fit_poisson_nmf <- function (X, k, fit0, numiter = 100,
     cat(sprintf("Running at most %d %s updates, %s extrapolation ",
                 numiter,method.text,
                 ifelse(control$extrapolate,"with","without")))
-    cat("(fastTopics 0.7-42).\n")
+    cat("(fastTopics 0.7-43).\n")
   }
   
   # INITIALIZE ESTIMATES
@@ -556,7 +556,7 @@ fit_poisson_nmf_main_loop <- function (X, fit, numiter, update.factors,
     progress[i,"dev"]         <- dev.const + 2*fit$loss
     res <- with(poisson_nmf_kkt(X,fit$F,fit$L,
                                 version = ifelse(control$nc == 1,
-                                                 "Rcpp","RcppParallel")),
+                                                 "Rcpp","Rcpp_Parallel")),
                 max(abs(rbind(F[update.factors,],
                               L[update.loadings,]))))
     progress[i,"res"]         <- res
@@ -651,7 +651,7 @@ update_poisson_nmf <- function (X, fit, update.factors, update.loadings,
   # estimates.
   fit$loss <- sum(cost(X,fit$L,t(fit$F),control$eps,
                        version = ifelse(control$nc == 1,
-                                        "Rcpp","RcppParallel")))
+                                        "Rcpp","Rcpp_Parallel")))
   fit$loss.fnly <- fit$loss
   
   # Output the updated "fit".
@@ -703,7 +703,7 @@ update_poisson_nmf_extrapolated <- function (X, fit, update.factors,
   # non-extrapolated solution for the factors (Fn).
   fit$loss.fnly <- sum(cost(X,fit$Ly,t(Fn),control$eps,
                             version = ifelse(control$nc == 1,
-                                             "Rcpp","RcppParallel")))
+                                             "Rcpp","Rcpp_Parallel")))
 
   # Update the extrapolation parameters following Algorithm 3 of
   # Ang & Gillis (2019).
