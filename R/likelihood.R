@@ -61,22 +61,22 @@
 #' 
 #' @export
 #' 
-loglik_poisson_nmf <- function (X, fit, e = 1e-8)
-  loglik_helper(X,fit,"loglik.poisson",e)
+loglik_poisson_nmf <- function (X, fit, e = 1e-8, nc = 1)
+  loglik_helper(X,fit,"loglik.poisson",e,nc)
 
 #' @rdname likelihood
 #' 
 #' @export
 #' 
-loglik_multinom_topic_model <- function (X, fit, e = 1e-8)
-  loglik_helper(X,fit,"loglik.multinom",e)
+loglik_multinom_topic_model <- function (X, fit, e = 1e-8, nc = 1)
+  loglik_helper(X,fit,"loglik.multinom",e,nc)
 
 #' @rdname likelihood
 #' 
 #' @export
 #' 
-deviance_poisson_nmf <- function (X, fit, e = 1e-8)
-  loglik_helper(X,fit,"deviance.poisson",e)
+deviance_poisson_nmf <- function (X, fit, e = 1e-8, nc = 1)
+  loglik_helper(X,fit,"deviance.poisson",e,nc)
 
 #' @rdname likelihood
 #'
@@ -125,8 +125,14 @@ cost <- function (X, A, B, e = 1e-8, family = c("poisson","multinom"),
 
 # This function provides the core implementation for calculation of
 # log-likelihoods and deviances.
+#
+# nc controls the number of RcppParallel threads used for the cost()
+# call: nc = 1 routes to the serial "Rcpp" backend; nc > 1 routes to
+# "Rcpp_parallel" (TBB parallelReduce over columns of X).  This is the
+# same convention used in fit_poisson_nmf / update_poisson_nmf.
 loglik_helper <- function (X, fit,
-  output.type = c("loglik.poisson","loglik.multinom","deviance.poisson"), e) {
+  output.type = c("loglik.poisson","loglik.multinom","deviance.poisson"),
+  e, nc = 1) {
 
   # Verify and process input "output.type".
   output.type <- match.arg(output.type)
@@ -144,13 +150,17 @@ loglik_helper <- function (X, fit,
   F <- fit$F
   L <- fit$L
 
+  cost_version <- ifelse(nc == 1,"Rcpp","Rcpp_parallel")
+
   # Compute the log-likelihood or deviance.
   if (output.type == "loglik.poisson" | output.type == "loglik.multinom") {
-    f <- loglik_poisson_const(X) - cost(X,L,t(F),e,"poisson")
+    f <- loglik_poisson_const(X) - cost(X,L,t(F),e,"poisson",
+                                        version = cost_version)
     if (output.type == "loglik.multinom")
       f <- f - loglik_size_factors(X,fit$F,fit$L)
   } else if (output.type == "deviance.poisson")
-    f <- deviance_poisson_const(X) + 2*cost(X,L,t(F),e,"poisson")
+    f <- deviance_poisson_const(X) + 2*cost(X,L,t(F),e,"poisson",
+                                             version = cost_version)
   return(f)
 }
 
